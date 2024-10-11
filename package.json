@@ -1,7 +1,6 @@
 {
   "name": "ppm_demo-3",
   "version": "1.0.0",
-  "description": "",
   "main": "Project_entry.spec.js",
   "scripts": {},
   "keywords": [],
@@ -14,6 +13,11 @@
   "dependencies": {
     "fs": "^0.0.1-security",
     "fs-extra": "^11.2.0",
-    "node-cron": "^3.0.3"
-  }
+    "node-cron": "^3.0.3",
+    "playwright": "^1.48.0"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "description": ""
 }
