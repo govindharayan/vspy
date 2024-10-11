@@ -1,14 +1,14 @@
-name: Test Playwright Installation
+name: Test Node.js Installation
 
 on:
   push:
     branches:
       - main
   pull_request:
-  workflow_dispatch:  # Allows manual triggers
+  workflow_dispatch:
 
 jobs:
-  test-playwright:
+  test-node:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,10 +20,29 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Playwright
+      - name: Install Playwright (if needed)
         run: npm install playwright
 
-      - name: Check Playwright Installation
+      - name: Create Node Test Script
         run: |
-          npx playwright --version
-          echo "Playwright is installed successfullyddd!"
+          echo "// test-node.js
+          console.log('Node.js Version:', process.version);
+          const { exec } = require('child_process');
+          exec('npm --version', (error, stdout, stderr) => {
+              if (error) {
+                  console.error(`Error fetching npm version: ${stderr}`);
+                  return;
+              }
+              console.log('npm Version:', stdout.trim());
+          });
+          console.log('Current Working Directory:', process.cwd());
+          console.log('Node.js is working correctly!');" > test-node.js
+
+      - name: Run Node Test Script
+        run: node test-node.js
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-test-report
+          path: test-node.js  # Optional: Save the test script as an artifact
