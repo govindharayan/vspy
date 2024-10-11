@@ -3,8 +3,9 @@ name: Run Playwright Tests
 on:
   push:
     branches:
-      - main  # Adjust if your default branch is different
+      - main
   pull_request:
+  workflow_dispatch:  # Allows manual triggers
 
 jobs:
   test:
@@ -13,13 +14,13 @@ jobs:
     steps:
       # Step 1: Check out the repository
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3
 
       # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Adjust the version if necessary
+          node-version: '20'  # Updated to Node.js 20
 
       # Step 3: Install dependencies
       - name: Install dependencies
