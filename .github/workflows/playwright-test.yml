@@ -1,12 +1,9 @@
-name: Run Playwright Tests
+name: run-playwright-tests
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  run-playwright-tests:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,28 +13,13 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-version: '20.x'
 
-    - name: Install missing dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libnss3 libxss1 libasound2 libx264-dev libicu-dev libatk1.0-0 libcups2 libdrm2 libgbm1 libglib2.0-0
-        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3-0 libdbus-glib-1-2
-
-    - name: Install Node.js dependencies
+    - name: Install Dependencies
       run: npm install
 
-    - name: Grant execution permissions for Playwright
-      run: chmod +x ./node_modules/.bin/playwright
-
-    - name: Install Playwright browsers and dependencies
+    - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Run Playwright tests
-      run: npx playwright test --project chromium --headed --trace on --workers 1 --timeout 600000
-
-    - name: Upload Playwright report
-      uses: actions/upload-artifact@v3
-      with:
-        name: playwright-trace
-        path: playwright-report/
+    - name: Run Playwright Tests in Headless Mode
+      run: npx playwright test --headless --trace on --project=chromium

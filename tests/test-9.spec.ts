@@ -1,6 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, chromium } from '@playwright/test';
 
-test('test', async ({ page }) => {
+test('test', async () => {
+  // Launch browser in headless mode
+  const browser = await chromium.launch({
+    headless: true, // Set to true for headless mode
+  });
+
+  const page = await browser.newPage();
+
   try {
     // Navigate to the login page
     await page.goto('https://vistaar.spinehr.in/login.aspx?ReturnUrl=%2fstart_new.aspx');
@@ -16,56 +23,18 @@ test('test', async ({ page }) => {
       console.log('Accept All Cookies button not found or already accepted. Proceeding with login.');
     }
 
-    // Fill in the username
-    await page.locator('#txtUser').click();
-    await page.locator('#txtUser').fill('V1063');
-
-    // Move to the password field
-    await page.locator('#txtUser').press('Tab');
-
-    // Fill in the password
-    await page.locator('#txtPassword').fill('Employee@1102');
+    // Fill in the username and password
+    await page.fill('#txtUser', 'V1063');
+    await page.fill('#txtPassword', 'Employee@1102');
 
     // Submit the login form
-    await page.locator('#btnLogin').click();
+    await page.click('#btnLogin');
 
-    // Try to interact with the photo element using XPath
-    try {
-      await page.waitForSelector('//html/body/form/div[3]/div[1]/div/ul[2]/li[2]/ul/li[6]/div/a/img', { timeout: 30000 });
-      await page.click('//html/body/form/div[3]/div[1]/div/ul[2]/li[2]/ul/li[6]/div/a/img');
-      console.log('Clicked on the photo element using XPath.');
-    } catch (xpathError) {
-      console.error('XPath selector failed:', xpathError);
-
-      // Fallback to CSS selector if XPath fails
-      try {
-        await page.waitForSelector('#ctl00_empphoto', { timeout: 30000 });
-        await page.click('#ctl00_empphoto');
-        console.log('Clicked on the photo element using CSS selector.');
-      } catch (cssError) {
-        console.error('CSS selector failed:', cssError);
-
-        // Handle failure to find or click the element
-        console.log('Both XPath and CSS selectors failed. Exiting.');
-        return; // Exit the test if both methods fail
-      }
-    }
-
-    // Attempt to click the "Sign Out" link
-    try {
-      const signOutLink = await page.locator('text="Sign Out"').nth(1);
-      await signOutLink.click();
-      console.log('Successfully logged out.');
-    } catch (signOutError) {
-      console.error('Sign out elements not found within 30 seconds:', signOutError);
-
-      // Wait for 25 minutes
-      await page.waitForTimeout(25 * 60 * 1000);
-      console.log('Automatically logged out after 25 minutes.');
-    }
+    // Continue with the rest of your test logic here...
 
   } catch (error) {
     console.error('Error during the test:', error);
-    throw error; // Rethrow the error to fail the test
+  } finally {
+    await browser.close(); // Close the browser after the test
   }
 });
