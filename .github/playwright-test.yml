@@ -1,0 +1,53 @@
+name: Playwright Test
+
+# This workflow runs on any push or pull request to the main branch, or manually.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  run-playwright-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Node.js (using version 20.x)
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    # Step 3: Cache Node.js dependencies (optional, but improves performance)
+    - name: Cache Node.js modules
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    # Step 4: Install NPM dependencies (this includes Playwright)
+    - name: Install dependencies
+      run: npm install
+
+    # Step 5: Install Playwright browsers
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    # Step 6: Run Playwright test (the test script you provided)
+    - name: Run Playwright test
+      run: npx playwright test test-9.spec.ts --project=chromium --headed --trace=on --workers=1 --timeout=600000
+
+    # Step 7: Upload test artifacts like traces (optional, for debugging failures)
+    - name: Upload Playwright Trace (on failure)
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: playwright-trace
+        path: playwright-report
